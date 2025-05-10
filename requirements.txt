@@ -1,11 +1,12 @@
+# requirements.txt
 streamlit
 langchain
 langchain-community
 langchain-groq
 langgraph
 faiss-cpu
-PyPDF2
-sentence-transformers
-python-dotenv
-requests
+PyPDF2==3.0.1  
+pypdf          # Add this as a backup
+pdfminer.six
 cohere
+python-dotenv

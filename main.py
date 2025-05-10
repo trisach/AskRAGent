@@ -79,10 +79,10 @@ class Agent:
     
 def build_graph(uploaded_file):
     """Build the graph"""
-    preproc = Datapreproc("./data/")
+    preproc = Datapreproc("data/")
     print("Loading and splitting documents...")
     # preproc.load_docs()
-    preproc.load_docs(f"./data/{uploaded_file}")
+    preproc.load_docs(f"data/{uploaded_file}")
     splits = preproc.splits()
     print("Creating vector store...")
     vector_store = preproc.create_vector_store(splits)
