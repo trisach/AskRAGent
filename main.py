@@ -100,12 +100,33 @@ def build_graph(uploaded_file):
     # Bind tools to the LLM
     llm_with_tools = agent_system.llm.bind_tools(tools)
 
-# Assistant node
-    
     def assistant(state: MessagesState):
-        # Instead of filtering, just use the full message history
-        result = llm_with_tools.invoke(state["messages"])
-        return {"messages": [result]}
+        system_prompt = """You are an advanced AI assistant. Use the available tools to answer user questions. 
+        Refer to previous parts of our conversation when appropriate.
+        If you don't know the answer, say "I can't find the final answer." 
+        For calculations and math operations:
+        - ALWAYS use the appropriate tool (add, subtract, multiply, divide) rather than calculating yourself
+        - Show your reasoning with the tool calls
+        - Present the final result clearly
+        Never attempt to perform calculations directly. Always use the provided tools.
+        Be concise and helpful. 
+        When using tools, explain your reasoning briefly."""
+        
+        # Create a new messages array with the system message at the beginning
+        messages_with_system = [{"role": "system", "content": system_prompt}]
+        
+        # Add all the existing messages
+        if isinstance(state["messages"], str):
+            # If it's just a string (first message)
+            messages_with_system.append({"role": "user", "content": state["messages"]})
+        else:
+            # If it's already a list of messages
+            messages_with_system.extend(state["messages"])
+        
+        # Get response with the system prompt included
+        result = llm_with_tools.invoke(messages_with_system)
+        
+        return {"messages": state["messages"] + [result]}
 
     # Create the graph
     builder = StateGraph(MessagesState)
